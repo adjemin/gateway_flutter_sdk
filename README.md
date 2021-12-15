@@ -2,8 +2,22 @@
 
 Gateway sdk to allow payment and transfer in Adjemin app
 
+### Getting Started. Import the package
+
+Add the adjemin_gateway_sdk package as a dependancy in your `pubspec.yaml` file.
+
+```yaml
+    dependencies:
+    flutter:
+        sdk: flutter
+    adjemin_gateway_sdk:
+      git:
+      url: git@gitlab.com:adjemin/adjemin_gateway_sdk.git
+```
+
 ## PayIn
 Accept payment from mobile money
+
 
 Example
 ```dart
