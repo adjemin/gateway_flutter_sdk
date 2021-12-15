@@ -12,7 +12,7 @@ Add the adjemin_gateway_sdk package as a dependancy in your `pubspec.yaml` file.
         sdk: flutter
     adjemin_gateway_sdk:
       git:
-      url: git@gitlab.com:adjemin/adjemin_gateway_sdk.git
+        url: git@gitlab.com:adjemin/adjemin_gateway_sdk.git
 ```
 
 ## PayIn
