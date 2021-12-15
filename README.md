@@ -7,11 +7,11 @@ Accept payment from mobile money
 
 Example
 ```dart
-
+import 'package:adjemin_gateway_sdk/adjemin_gateway_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'adjemin_gateway_sdk.dart';
+
 import 'package:uuid/uuid.dart';
 
 void main() {
@@ -37,8 +37,8 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         colorScheme: Theme.of(context).colorScheme.copyWith(
-          primary: Colors.green,
-          secondary: Colors.blue[500]
+            primary: Colors.green,
+            secondary: Colors.blue[500]
         ),
         textTheme: GoogleFonts.montserratTextTheme(
           Theme.of(context).textTheme,
@@ -68,23 +68,23 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: ()async {
           final GatewayTransaction? result = await Navigator.push(context,
-            MaterialPageRoute(builder: (context)=> OperatorPickerWidget(
-              title: 'Payer une commande',
-              description: 'Payer une commande',
-              amount: 100,
-              merchantTransactionId: uuid.v4(),
-              webhookUrl:"https://adjemin.com",
-              isPayIn: true,
-              countryCode: Country.CI,
-              customer: Customer(
-                firstName: "Ange",
-                lastName: "Bagui",
-                photoUrl: "https://i.imgur.com/dAApjNt.jpg",
-                dialCode: "225",
-                phoneNumber: "0556888385",
-                email: "angebagui@gmail.com"
-              ),
-            ))
+              MaterialPageRoute(builder: (context)=> OperatorPickerWidget(
+                title: 'Payer une commande',
+                description: 'Payer une commande',
+                amount: 100,
+                merchantTransactionId: uuid.v4(),
+                webhookUrl:"https://adjemin.com",
+                isPayIn: true,
+                countryCode: Country.CI,
+                customer: Customer(
+                    firstName: "Ange",
+                    lastName: "Bagui",
+                    photoUrl: "https://i.imgur.com/dAApjNt.jpg",
+                    dialCode: "225",
+                    phoneNumber: "0556888385",
+                    email: "angebagui@gmail.com"
+                ),
+              ))
           );
 
           if(result != null){
@@ -145,8 +145,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 }
-
-
 
 ```
 
