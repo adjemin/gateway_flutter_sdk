@@ -90,6 +90,11 @@ class _HomeScreenState extends State<HomeScreen> {
           if(result != null){
 
             print("Payment result =>>  $result");
+            
+            //result.status can be GatewayTransaction.SUCCESSFUL
+            //result.status can be GatewayTransaction.FAILED
+            //result.status can be GatewayTransaction.PENDING
+            //result.status can be GatewayTransaction.INITIATED
 
             displayErrorMessage(context, "${result.merchantTransId} ${result.status}", (){
 
