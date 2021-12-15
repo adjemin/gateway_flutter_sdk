@@ -482,7 +482,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   }
 
   _runTransactionChecker(GatewayOperator operator, String transactionId){
-    _transactionCheckTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+    _transactionCheckTimer = Timer.periodic(Duration(milliseconds: 400), (timer) {
       _checkTransactionStatus(operator, transactionId);
     });
   }

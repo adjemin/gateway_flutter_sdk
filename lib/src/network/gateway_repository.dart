@@ -49,7 +49,7 @@ class GatewayRepository implements IGatewayRepository{
 
     final response = await get(url);
 
-    print('checkPaymentStatus() =>>> REQ => $response');
+    print('checkPaymentStatus() =>>> REQ => ${response.body}');
 
     if(response.statusCode == 200){
       final Map<String, dynamic> json  = jsonDecode(response.body);
