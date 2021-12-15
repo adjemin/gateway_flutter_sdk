@@ -1,8 +1,11 @@
-# adjemin_gateway_sdk
+# Integrate Adjemin Gateway SDK
 
 Gateway sdk to allow payment and transfer in Adjemin app
 
-### Getting Started. Import the package
+## 1. Add the package to your project
+
+<img src="https://user-images.githubusercontent.com/22669874/126673917-f8bdd47a-7a4d-4241-8b46-27ef108a0e23.png" alt="chatwoot screenshot" height="560"/>
+
 
 Add the adjemin_gateway_sdk package as a dependancy in your `pubspec.yaml` file.
 
@@ -14,7 +17,27 @@ Add the adjemin_gateway_sdk package as a dependancy in your `pubspec.yaml` file.
       git:
         url: git@gitlab.com:adjemin/adjemin_gateway_sdk.git
 ```
-
+## 3. How to use
+You must use `OperatorPickerWidget`
+```dart
+OperatorPickerWidget(
+    title: 'Payer une commande',
+    description: 'Payer une commande',
+    amount: 100,
+    merchantTransactionId: uuid.v4(),
+    webhookUrl:"https://adjemin.com",
+    isPayIn: true,
+    countryCode: Country.CI,
+    customer: Customer(
+        firstName: "Ange",
+        lastName: "Bagui",
+        photoUrl: "https://i.imgur.com/dAApjNt.jpg",
+        dialCode: "225",
+        phoneNumber: "0556888385",
+        email: "angebagui@gmail.com"
+    ),
+)
+```
 ## PayIn
 Accept payment from mobile money
 
