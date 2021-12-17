@@ -8,7 +8,6 @@ import 'package:adjemin_gateway_sdk/src/network/GatewayException.dart';
 import 'package:adjemin_gateway_sdk/src/network/gateway_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import 'cash_payment_widget.dart';
 import 'custom_progress_widget.dart';
@@ -79,24 +78,29 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   Widget build(BuildContext context) {
 
 
-    return _isPaymentLoading?_buildPaymentLoadingUi():
-    Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),),
-        actions: [
-          GestureDetector(
-            onTap: (){
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: _isPaymentLoading?_buildPaymentLoadingUi():
+      Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),),
+          actions: [
+            GestureDetector(
+              onTap: (){
 
-                Navigator.of(context).pop();
+                displayPrompt(context, "Êtes-vous sûr de faire cela?", "Voulez vous confirmer que vous quittez sans finaliser le paiement ?",(){
+                  Navigator.of(context).pop();
+                },(){} );
 
-            },
-            child: Icon(Icons.close,size: 30,),
-          ),
-          SizedBox(width: 20,)
-        ],
+              },
+              child: Icon(Icons.close,size: 30,),
+            ),
+            SizedBox(width: 20,)
+          ],
+        ),
+        body: _isLoading? CustomProgressWidget():
+        _buildBody(),
       ),
-      body: _isLoading? CustomProgressWidget():
-       _buildBody(),
     );
     
   }
@@ -113,7 +117,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
           hideProgress();
           if(mounted){
             setState(() {
-              elements = value;
+              elements = value.where((element) => element.isActivePayin == true).toList();
               _paymentOperatorSelected = elements[1];
             });
           }
@@ -378,7 +382,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
 
    _processPayIn(GatewayOperator e, Customer mCustomer)async {
     if(e.name!.toLowerCase().contains('orange')){
-      final String code  = await Navigator.push(context,
+      final String? code  = await Navigator.push(context,
                         MaterialPageRoute(builder: (context)=> OtpFormWidget(
                           gatewayOperator: e,
                           title:widget.title
@@ -541,6 +545,68 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                 child:Text("D'accord",) ,
               ),
             ),
+
+          ],
+        ),
+      );
+    });
+  }
+
+  displayPrompt(BuildContext context, String title, String message, Function() positive, Function() negative){
+    showModalBottomSheet(context: context, builder: (ctext){
+      return Container(
+        padding: EdgeInsets.all(16.0),
+        height: 260,
+        color: Colors.white,
+        child: Column(
+          children: [
+
+            Container(
+              child: Text("$title",style: Theme.of(context).textTheme.headline6),
+            ),
+            SizedBox(height: 20,),
+            Container(
+              child: Text(message,style: Theme.of(context).textTheme.bodyText1),
+            ),
+            SizedBox(height: 20,),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: (){
+                  Navigator.of(ctext).pop();
+                  positive();
+                },
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
+                    textStyle: MaterialStateProperty.all(Theme.of(context).textTheme.button?.copyWith(
+                        color: Colors.white,
+                        fontSize: 19
+                    ))
+                ),
+                child:Text("Confirmer",) ,
+              ),
+            ),
+            SizedBox(height: 20,),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: (){
+                  Navigator.of(ctext).pop();
+                  negative();
+                },
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.primary),
+                    textStyle: MaterialStateProperty.all(Theme.of(context).textTheme.button?.copyWith(
+                        color: Colors.white,
+                        fontSize: 19
+                    ))
+                ),
+                child:Text("Annuler",) ,
+              ),
+            ),
+            SizedBox(height: 10,),
 
           ],
         ),

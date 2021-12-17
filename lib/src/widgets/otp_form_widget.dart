@@ -42,35 +42,42 @@ class _OtpFormWidgetState extends State<OtpFormWidget> {
             SizedBox(height: 20.0,),
             Container(
               child: Text("Obtenez un code validation en cliquant sur", style: Theme.of(context)
-                .textTheme.caption,),
+                .textTheme.subtitle1,),
             ),
             SizedBox(height: 20.0,),
             Center(
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.phone),
-                  SizedBox(height: 20.0,),
+                  SizedBox(width: 20.0,),
                   Text("#144*22#", style: Theme.of(context).textTheme.headline5,)
                 ],
               ) ,
             ),
             SizedBox(height: 20.0,),
             Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text("Entrez le code reçu  dans le champs ci-dessous:", style: Theme.of(context)
-                  .textTheme.caption,),
+                  .textTheme.subtitle1,),
             ),
 
             SizedBox(height: 20.0,),
-            Center(
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: OTPTextField(
                 length: 4,
                 width: MediaQuery.of(context).size.width,
                 textFieldAlignment: MainAxisAlignment.spaceAround,
-                fieldWidth: 80,
+                fieldWidth:( MediaQuery.of(context).size.width/4) - 40,
                 fieldStyle: FieldStyle.underline,
-                style: TextStyle(fontSize: 17),
+                style: Theme.of(context).textTheme.headline3!.copyWith(
+                  color: Colors.black
+                ),
                 onCompleted: (pin) {
-                  print("Completed: " + pin);
+                 if(pin.isNotEmpty && pin.length == 4){
+                   Navigator.of(context).pop(pin);
+                 }
                 },
               ),
             ),
