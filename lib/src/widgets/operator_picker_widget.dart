@@ -98,8 +98,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
             SizedBox(width: 20,)
           ],
         ),
-        body: _isLoading? CustomProgressWidget():
-        _buildBody(),
+        body: _isLoading? CustomProgressWidget(): _buildBody(),
       ),
     );
     
