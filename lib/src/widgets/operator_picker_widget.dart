@@ -13,6 +13,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'cash_payment_widget.dart';
 import 'custom_progress_widget.dart';
 import 'customer_form_widget.dart';
+import 'otp_form_widget.dart';
 
 enum Country{CI}
 
@@ -49,9 +50,6 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   bool _isLoading = false;
   bool _isPaymentLoading = false;
   bool _isWaitingAcceptation = true;
-  bool _hasPaymentUrl = false;
-  String? _paymentUrl;
-  GatewayTransaction? _transaction;
   GatewayOperator? _paymentOperatorSelected;
   Timer? _transactionCheckTimer;
 
@@ -81,19 +79,15 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   Widget build(BuildContext context) {
 
 
-    return _isPaymentLoading?_buildPaymentLoadingUi():Scaffold(
+    return _isPaymentLoading?_buildPaymentLoadingUi():
+    Scaffold(
       appBar: AppBar(
         title: Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),),
         actions: [
           GestureDetector(
             onTap: (){
 
-              if(_transaction != null && _hasPaymentUrl == true){
-                Navigator.of(context).pop(_transaction);
-              }else{
                 Navigator.of(context).pop();
-              }
-
 
             },
             child: Icon(Icons.close,size: 30,),
@@ -154,7 +148,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   }
 
   Widget _buildBody() {
-    return _hasPaymentUrl? _buildPaymentUrlUi():new SingleChildScrollView(
+    return new SingleChildScrollView(
       child: Column(
         children: [
           Container(
@@ -244,15 +238,6 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
 
       if(widget.isPayIn){
         if(gatewayOperator.name!.toLowerCase().contains('orange')){
-
-          hidePaymentLoader();
-          if(mounted){
-            setState(() {
-              _hasPaymentUrl  = true;
-              _paymentUrl = value.paymentUrl;
-              _transaction = value;
-            });
-          }
 
           _runTransactionChecker(gatewayOperator, widget.merchantTransactionId);
 
@@ -393,18 +378,16 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
 
    _processPayIn(GatewayOperator e, Customer mCustomer)async {
     if(e.name!.toLowerCase().contains('orange')){
-      /*final GatewayTransaction transaction  = await Navigator.push(context,
-                        MaterialPageRoute(builder: (context)=> CashPaymentWidget(
-                          customer:mCustomer,
-                          operator:e,
-                          amount:widget.amount,
-                          merchantTransactionId: widget.merchantTransactionId,
-                          description:widget.description,
-                          isPayIn: widget.isPayIn,
+      final String code  = await Navigator.push(context,
+                        MaterialPageRoute(builder: (context)=> OtpFormWidget(
+                          gatewayOperator: e,
+                          title:widget.title
                         ))
-                    );*/
+                    );
 
-      _pay(customer: mCustomer, gatewayOperator: e);
+     if(code != null && code.isNotEmpty){
+       _pay(customer: mCustomer, gatewayOperator: e,otp: code);
+     }
 
     }
 
@@ -468,7 +451,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
       }else if(operator.name!.toLowerCase().contains("moov")){
         return "Veuillez patienter, nous vous redirigeons vers le portail de paiement ${_paymentOperatorSelected!.name}.";
       }else if(operator.name!.toLowerCase().contains("orange")){
-        return "Veuillez patienter, nous vous redirigeons vers le portail de paiement ${_paymentOperatorSelected!.name}.";
+        return "Traitement de la transaction ${_paymentOperatorSelected!.name} en cours...";
       }else{
         return "En attente de validation de la transaction.";
       }
@@ -491,7 +474,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
 
     print("Date ${DateTime.now()}");
 
-    if(!_isPaymentLoading && !_hasPaymentUrl){
+    if(!_isPaymentLoading){
 
       showPaymentLoader(operator);
     }
@@ -563,15 +546,6 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
         ),
       );
     });
-  }
-
-  _buildPaymentUrlUi() {
-    print("PAYMENT_URL =>>>$_paymentUrl");
-    return _paymentUrl== null? Container():
-    WebView(
-      initialUrl: '${_paymentUrl}',
-      javascriptMode: JavascriptMode.unrestricted,
-    );
   }
 
 }
