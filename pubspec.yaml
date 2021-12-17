@@ -1,6 +1,6 @@
 name: adjemin_gateway_sdk
 description: Gateway sdk to allow payment and transfer in Adjemin app
-version: 1.0.3
+version: 1.0.4
 homepage: https://gitlab.com/adjemin/adjemin_gateway_sdk
 
 environment:
@@ -22,6 +22,7 @@ dependencies:
   http: ^0.13.4
   webview_flutter: ^3.0.0
   otp_text_field: ^1.1.1
+  url_launcher:
 
 dev_dependencies:
   flutter_test:

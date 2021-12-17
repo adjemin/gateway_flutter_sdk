@@ -389,7 +389,23 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                     );
 
      if(code != null && code.isNotEmpty){
-       _pay(customer: mCustomer, gatewayOperator: e,otp: code);
+
+       final bool? hasPaymentResult  = await Navigator.push(context,
+           MaterialPageRoute(builder: (context)=> CashPaymentWidget(
+             customer:mCustomer,
+             operator:e,
+             amount:widget.amount,
+             merchantTransactionId: widget.merchantTransactionId,
+             description:widget.description,
+             isPayIn: widget.isPayIn,
+           ))
+       );
+
+       if(hasPaymentResult == true){
+         _pay(customer: mCustomer, gatewayOperator: e,otp: code);
+       }else{
+         Navigator.of(context).pop();
+       }
      }
 
     }

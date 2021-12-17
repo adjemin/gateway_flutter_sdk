@@ -2,6 +2,7 @@ import 'package:adjemin_gateway_sdk/adjemin_gateway_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OtpFormWidget extends StatefulWidget {
 
@@ -45,24 +46,35 @@ class _OtpFormWidgetState extends State<OtpFormWidget> {
                 .textTheme.subtitle1,),
             ),
             SizedBox(height: 20.0,),
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.phone),
-                  SizedBox(width: 20.0,),
-                  Text("#144*22#", style: Theme.of(context).textTheme.headline5,)
-                ],
+            Container(
+              width: 200,
+              child: ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
+                  ),
+                onPressed: ()async{
+                 await _makePhoneCall("#144*82#");
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.phone),
+                    SizedBox(width: 20.0,),
+                    Text("#144*82#", style: Theme.of(context).textTheme.headline5!.copyWith(
+                        fontWeight: FontWeight.bold,
+                    ),)
+                  ],
+                ),
               ) ,
             ),
-            SizedBox(height: 20.0,),
+            SizedBox(height: 40.0,),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text("Entrez le code reçu  dans le champs ci-dessous:", style: Theme.of(context)
                   .textTheme.subtitle1,),
             ),
 
-            SizedBox(height: 20.0,),
+
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: OTPTextField(
@@ -87,5 +99,25 @@ class _OtpFormWidgetState extends State<OtpFormWidget> {
         ),
       ),
     );
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    // Use `Uri` to ensure that `phoneNumber` is properly URL-encoded.
+    // Just using 'tel:$phoneNumber' would create invalid URLs in some cases,
+    // such as spaces in the input, which would cause `launch` to fail on some
+    // platforms.
+
+
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+
+    if (await canLaunch(launchUri.toString())) {
+      await launch(launchUri.toString());
+    }
+
+
+
   }
 }

@@ -3,6 +3,15 @@
    <application
         android:label="adjemin_gateway_sdk"
         android:icon="@mipmap/ic_launcher">
+
+       <queries>
+           <!-- If your app makes calls -->
+           <intent>
+               <action android:name="android.intent.action.DIAL" />
+               <data android:scheme="tel" />
+           </intent>
+
+       </queries>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
