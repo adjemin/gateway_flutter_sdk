@@ -40,7 +40,7 @@ abstract class IGatewayRepository{
 
 class GatewayRepository implements IGatewayRepository{
 
-  final String _API_URL = "https://api.adjem.in";
+  final String _API_URL = "https://api-test.adjem.in";
   //final String _API_URL = "https://api.adjem.in";
 
   @override
