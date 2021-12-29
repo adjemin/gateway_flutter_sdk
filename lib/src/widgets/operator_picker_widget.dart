@@ -26,8 +26,10 @@ class OperatorPickerWidget extends StatefulWidget {
   final String? description;
   final String merchantTransactionId;
   final String webhookUrl;
+  final String baseUrl;
 
   const OperatorPickerWidget({
+    required this.baseUrl,
     required this.countryCode,
     required this.isPayIn,
     required this.title,
@@ -110,7 +112,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
     showProgress();
 
     GatewayRepository()
-        .findOperatorsByCountry(widget.countryCode.toString().split('.').last)
+        .findOperatorsByCountry(widget.baseUrl,widget.countryCode.toString().split('.').last)
         .then((value){
 
           hideProgress();
@@ -228,6 +230,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   void _pay({required Customer customer, required GatewayOperator gatewayOperator, String? otp}){
     showPaymentLoader(gatewayOperator);
     GatewayRepository().makePayment(
+        baseUrl: widget.baseUrl,
         amount: widget.amount,
         gatewayOperatorCode: gatewayOperator.payinCode!,
         merchantTransId: widget.merchantTransactionId,
@@ -499,7 +502,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
     }
 
     GatewayRepository()
-        .checkPaymentStatus(transactionId)
+        .checkPaymentStatus(widget.baseUrl,transactionId)
         .then((value){
 
          if(value.status == GatewayTransaction.SUCCESSFUL){

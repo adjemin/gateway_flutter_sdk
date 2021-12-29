@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: ()async {
           final GatewayTransaction? result = await Navigator.push(context,
               MaterialPageRoute(builder: (context)=> OperatorPickerWidget(
+                baseUrl: "https://api-test.adjem.in",
                 title: 'Payer une commande',
                 description: 'Payer une commande',
                 amount: 100,

@@ -7,8 +7,9 @@ import 'package:http/http.dart';
 
 abstract class IGatewayRepository{
 
-  Future<List<GatewayOperator>> findOperatorsByCountry(String countryIso);
+  Future<List<GatewayOperator>> findOperatorsByCountry(String baseUrl,String countryIso);
   Future<GatewayTransaction> makePayment({
+    required String baseUrl,
     required int amount,
     required String gatewayOperatorCode,
     required String merchantTransId,
@@ -20,11 +21,13 @@ abstract class IGatewayRepository{
     String? otp
   });
   Future<GatewayTransaction> finalisePayment({
+    required String baseUrl,
     required String merchantTransId,
     String? customerRecipientNumber,
     String? otp
   });
   Future<GatewayTransaction> makeTransfer({
+    required String baseUrl,
     required int amount,
     required String gatewayOperatorCode,
     required String merchantTransId,
@@ -34,18 +37,17 @@ abstract class IGatewayRepository{
     String? customerFirstname,
     String? customerLastname
   });
-  Future<GatewayTransaction> checkPaymentStatus(String merchantTransactionId);
+  Future<GatewayTransaction> checkPaymentStatus( String baseUrl,String merchantTransactionId);
 
 }
 
 class GatewayRepository implements IGatewayRepository{
 
-  final String _API_URL = "https://api-test.adjem.in";
-  //final String _API_URL = "https://api.adjem.in";
+
 
   @override
-  Future<GatewayTransaction> checkPaymentStatus(String merchantTransactionId)async {
-    final url = Uri.parse("$_API_URL/v3/gateway/payment/$merchantTransactionId");
+  Future<GatewayTransaction> checkPaymentStatus(String baseUrl, String merchantTransactionId)async {
+    final url = Uri.parse("$baseUrl/v3/gateway/payment/$merchantTransactionId");
 
     final response = await get(url);
 
@@ -84,14 +86,14 @@ class GatewayRepository implements IGatewayRepository{
   }
 
   @override
-  Future<GatewayTransaction> finalisePayment({required String merchantTransId, String? customerRecipientNumber, String? otp}) {
+  Future<GatewayTransaction> finalisePayment({required String baseUrl,required String merchantTransId, String? customerRecipientNumber, String? otp}) {
     // TODO: implement finalisePayment
     throw UnimplementedError();
   }
 
   @override
-  Future<List<GatewayOperator>> findOperatorsByCountry(String countryIso)async {
-   final url = Uri.parse("$_API_URL/v3/gateway/operators/$countryIso");
+  Future<List<GatewayOperator>> findOperatorsByCountry(String baseUrl,String countryIso)async {
+   final url = Uri.parse("$baseUrl/v3/gateway/operators/$countryIso");
 
    final response = await get(url);
    if(response.statusCode == 200){
@@ -110,6 +112,7 @@ class GatewayRepository implements IGatewayRepository{
 
   @override
   Future<GatewayTransaction> makePayment({
+    required String baseUrl,
     required int amount,
     required String gatewayOperatorCode,
     required String merchantTransId,
@@ -119,7 +122,7 @@ class GatewayRepository implements IGatewayRepository{
     String? customerFirstname,
     String? customerLastname,
     String? otp})async {
-    final url = Uri.parse("$_API_URL/v3/gateway/make_payment");
+    final url = Uri.parse("$baseUrl/v3/gateway/make_payment");
 
     final response = await post(url,
     body: jsonEncode({
@@ -171,8 +174,8 @@ class GatewayRepository implements IGatewayRepository{
   }
 
   @override
-  Future<GatewayTransaction> makeTransfer({required int amount, required String gatewayOperatorCode, required String merchantTransId,required String webhookUrl, required String customerRecipientNumber, String? customerEmail, String? customerFirstname, String? customerLastname})async {
-    final url = Uri.parse("$_API_URL/v3/gateway/make_transfer");
+  Future<GatewayTransaction> makeTransfer({required String baseUrl,required int amount, required String gatewayOperatorCode, required String merchantTransId,required String webhookUrl, required String customerRecipientNumber, String? customerEmail, String? customerFirstname, String? customerLastname})async {
+    final url = Uri.parse("$baseUrl/v3/gateway/make_transfer");
 
     final response = await post(url,
         body: jsonEncode({
