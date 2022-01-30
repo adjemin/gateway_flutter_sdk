@@ -20,12 +20,6 @@ abstract class IGatewayRepository{
     String? customerLastname,
     String? otp
   });
-  Future<GatewayTransaction> finalisePayment({
-    required String baseUrl,
-    required String merchantTransId,
-    String? customerRecipientNumber,
-    String? otp
-  });
   Future<GatewayTransaction> makeTransfer({
     required String baseUrl,
     required int amount,
@@ -85,11 +79,6 @@ class GatewayRepository implements IGatewayRepository{
     }
   }
 
-  @override
-  Future<GatewayTransaction> finalisePayment({required String baseUrl,required String merchantTransId, String? customerRecipientNumber, String? otp}) {
-    // TODO: implement finalisePayment
-    throw UnimplementedError();
-  }
 
   @override
   Future<List<GatewayOperator>> findOperatorsByCountry(String baseUrl,String countryIso)async {
