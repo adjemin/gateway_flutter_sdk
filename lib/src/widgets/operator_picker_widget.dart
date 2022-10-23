@@ -85,7 +85,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
       child: _isPaymentLoading?_buildPaymentLoadingUi():
       Scaffold(
         appBar: AppBar(
-          title: Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),),
+          title: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),),
           actions: [
             GestureDetector(
               onTap: (){
@@ -95,12 +95,12 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                 },(){} );
 
               },
-              child: Icon(Icons.close,size: 30,),
+              child: const Icon(Icons.close,size: 30,),
             ),
-            SizedBox(width: 20,)
+            const SizedBox(width: 20,)
           ],
         ),
-        body: _isLoading? CustomProgressWidget(): _buildBody(),
+        body: _isLoading? const CustomProgressWidget(): _buildBody(),
       ),
     );
     
@@ -153,12 +153,12 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   }
 
   Widget _buildBody() {
-    return new SingleChildScrollView(
+    return SingleChildScrollView(
       child: Column(
         children: [
           Container(
             alignment: Alignment.topLeft,
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Text("Sélectionnez un moyen de paiement",
             style: Theme.of(context).textTheme.subtitle1,
             ),
@@ -197,19 +197,19 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
 
   Widget _buildOperatorItemUi(GatewayOperator element) {
     return Container(
-      padding: EdgeInsets.only(left: 8.0, right: 8.0),
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: Card(
         shape:RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0)
         ) ,
         child: Row(
           children: [
-            SizedBox(width: 20,),
+            const SizedBox(width: 20,),
             Image.network(element.image!, width: 80,height: 80,),
-            SizedBox(width: 10,),
+            const SizedBox(width: 10,),
             Expanded(
               child:  Container(
-                child: Text("${element.name}", style: TextStyle(
+                child: Text("${element.name}", style: const TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                     color: Colors.black
@@ -217,9 +217,9 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
               ),
             ),
 
-            SizedBox(width: 10,),
-            Icon(Icons.arrow_forward_ios_outlined),
-            SizedBox(width: 20,),
+            const SizedBox(width: 10,),
+            const Icon(Icons.arrow_forward_ios_outlined),
+            const SizedBox(width: 20,),
 
           ],
         ),
@@ -327,55 +327,51 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
 
-            SizedBox(height: 50,),
+            const SizedBox(height: 50,),
 
             Row(
               children: [
-                SizedBox(width: 20,),
+                const SizedBox(width: 20,),
                 Container(
                   child: Text("Transaction en cours",
                     style: Theme.of(context).textTheme.headline5,),
                 ),
-                SizedBox(width: 50,),
+                const SizedBox(width: 50,),
                 GestureDetector(
                   onTap: (){
                     Navigator.of(context).pop();
                   },
-                  child: Icon(Icons.close,size: 40,),
+                  child: const Icon(Icons.close,size: 40,),
                 )
               ],
             ),
-            SizedBox(height: 100,),
+            const SizedBox(height: 100,),
             Center(
               child: Image.network(_paymentOperatorSelected!.image!,height: 80,),
             ),
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
+            Text("${_paymentOperatorSelected!.name!}",
+            style: Theme.of(context).textTheme.headline6,),
+            const SizedBox(height: 20,),
             Container(
-              child: Text("${_paymentOperatorSelected!.name!}",
-              style: Theme.of(context).textTheme.headline6,),
-            ),
-            SizedBox(height: 20,),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(getLoadingMessage(widget.isPayIn,_paymentOperatorSelected!, _isWaitingAcceptation),
                 style: Theme.of(context).textTheme.bodyText2?.copyWith(
                   fontSize: 16
                 ),),
             ),
 
-            SizedBox(height: 100,),
-            new Center(
+            const SizedBox(height: 100,),
+            Center(
               child: Container(
                 height: 100.0,
                 width: 100.0,
-                child: new CircularProgressIndicator(
+                child: const CircularProgressIndicator(
                   strokeWidth: 10.0,
                 ),
               ),
             ),
-            SizedBox(height: 20,),
-
-
+            const SizedBox(height: 20,),
           ],
         ),
       ),
@@ -487,7 +483,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   }
 
   _runTransactionChecker(GatewayOperator operator, String transactionId){
-    _transactionCheckTimer = Timer.periodic(Duration(milliseconds: 400), (timer) {
+    _transactionCheckTimer = Timer.periodic(const Duration(milliseconds: 400), (timer) {
       _checkTransactionStatus(operator, transactionId);
     });
   }
@@ -509,20 +505,32 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
 
                 hidePaymentLoader();
             _transactionCheckTimer?.cancel();
-            Navigator.of(context).pop(value);
 
           }else if(value.status == GatewayTransaction.FAILED){
            hidePaymentLoader();
             _transactionCheckTimer?.cancel();
-            Navigator.of(context).pop(value);
+           if(mounted){
+             Navigator.pop(context,value);
+           }
           }else{
 
           }
 
-
        }).catchError((onError){
-          //hidePaymentLoader();
+          hidePaymentLoader();
           print("Error $onError");
+
+          if(onError is GatewayException ){
+            if(onError.status == GatewayTransaction.FAILED){
+              if(mounted){
+                Navigator.pop(context,GatewayTransaction.fromJson({
+                  'status':onError.status,
+                  'is_completed':true,
+                  'merchant_trans_id':transactionId
+                }));
+              }
+            }
+          }
 
     });
 
@@ -531,7 +539,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   displayErrorMessage(BuildContext context, String message, Function() action){
     showModalBottomSheet(context: context, builder: (ctext){
       return Container(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         height: 200,
         color: Colors.white,
         child: Column(
@@ -540,11 +548,11 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
             Container(
               child: Text("Erreur rencontrée",style: Theme.of(context).textTheme.headline6),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Container(
               child: Text(message,style: Theme.of(context).textTheme.bodyText1),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Container(
               width: MediaQuery.of(context).size.width,
               height: 50,
@@ -560,7 +568,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                         fontSize: 19
                     ))
                 ),
-                child:Text("D'accord",) ,
+                child:const Text("D'accord",) ,
               ),
             ),
 
@@ -573,7 +581,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   displayPrompt(BuildContext context, String title, String message, Function() positive, Function() negative){
     showModalBottomSheet(context: context, builder: (ctext){
       return Container(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         height: 260,
         color: Colors.white,
         child: Column(
@@ -582,11 +590,11 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
             Container(
               child: Text("$title",style: Theme.of(context).textTheme.headline6),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Container(
               child: Text(message,style: Theme.of(context).textTheme.bodyText1),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Container(
               width: MediaQuery.of(context).size.width,
               height: 50,
@@ -602,10 +610,10 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                         fontSize: 19
                     ))
                 ),
-                child:Text("Confirmer",) ,
+                child:const Text("Confirmer",) ,
               ),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Container(
               width: MediaQuery.of(context).size.width,
               height: 50,
@@ -621,10 +629,10 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                         fontSize: 19
                     ))
                 ),
-                child:Text("Annuler",) ,
+                child:const Text("Annuler",) ,
               ),
             ),
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
 
           ],
         ),

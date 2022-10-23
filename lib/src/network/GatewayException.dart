@@ -5,4 +5,9 @@ class GatewayException implements Exception{
  final int? code;
 
  const GatewayException({this.message, this.error, this.status, this.code});
+
+ @override
+  String toString() {
+    return 'GatewayException{message: $message, error: $error, status: $status, code: $code}';
+  }
 }
