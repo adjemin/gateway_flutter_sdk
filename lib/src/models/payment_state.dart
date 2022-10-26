@@ -1,0 +1,5 @@
+enum PaymentState{
+ INITIATED,
+ PENDING,
+ COMPLETED
+}

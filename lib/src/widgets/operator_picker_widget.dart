@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:adjemin_gateway_sdk/adjemin_gateway_sdk.dart';
 import 'package:adjemin_gateway_sdk/src/models/customer.dart';
 import 'package:adjemin_gateway_sdk/src/models/gateway_transaction.dart';
+import 'package:adjemin_gateway_sdk/src/models/payment_event.dart';
+import 'package:adjemin_gateway_sdk/src/models/payment_state.dart';
 import 'package:adjemin_gateway_sdk/src/network/GatewayException.dart';
 import 'package:adjemin_gateway_sdk/src/network/gateway_repository.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +47,7 @@ class OperatorPickerWidget extends StatefulWidget {
 
 }
 
+
 class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
 
   List<GatewayOperator> elements = [];
@@ -54,26 +57,84 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   GatewayOperator? _paymentOperatorSelected;
   Timer? _transactionCheckTimer;
 
+  StreamController<PaymentEvent> paymentStreamController = StreamController.broadcast();
+
+  bool listenerRunning = false;
+
   @override
   void initState() {
     super.initState();
-
-    print("ISO =>> ${widget.countryCode.toString().split('.').last}");
     
     Timer.run(loadData);
+
+    paymentStreamController.stream.listen((event) {
+      if(event.currentState == PaymentState.INITIATED){
+
+      }
+
+      if(event.currentState == PaymentState.PENDING){
+
+      }
+
+      if(event.currentState == PaymentState.COMPLETED){
+          print("paymentStreamController.stream.listen(($event) ");
+          if(!listenerRunning){
+           listenerRunning = true;
+           _transactionCheckTimer?.cancel();
+
+           if(event.success){
+
+             hidePaymentLoader();
+             _transactionCheckTimer?.cancel();
+             if(mounted){
+               Navigator.pop(context,event.data);
+             }
+
+           }else{
+             if(event.data is GatewayException){
+               _transactionCheckTimer?.cancel();
+
+
+               if(mounted){
+                 if(event.data.code == 300 && event.data.error!.contains('(203)')){
+                   displayErrorMessage(context, "Une transaction similaire a été effectuée récemment, veuillez patienter 15 mins avant de réessayer", (){
+                     Navigator.pop(context);
+                   });
+                 }else{
+                   String errorMessage = event.data.message??event.data.error!;
+                   if(errorMessage == "Payment has failed"){
+                        errorMessage = "Le paiement a échoué";
+                   }else if(errorMessage == "An error has occurred"){
+                     errorMessage = "Une erreur est survenue";
+                   }else{
+                     errorMessage = event.data.error??"Une erreur est survenue";
+                   }
+                   displayErrorMessage(context, errorMessage, (){
+                     Navigator.pop(context);
+                   });
+                 }
+               }
+             }
+           }
+
+         }
+
+        }
+
+    });
   }
 
   @override
   void dispose() {
+    _transactionCheckTimer?.cancel();
     super.dispose();
-    if(_transactionCheckTimer!= null){
-      if(_transactionCheckTimer?.isActive == true){
-        _transactionCheckTimer?.cancel();
-      }else{
-        _transactionCheckTimer?.cancel();
-      }
-    }
 
+  }
+
+  @override
+  void deactivate() {
+
+    super.deactivate();
   }
   
   @override
@@ -208,13 +269,11 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
             Image.network(element.image!, width: 80,height: 80,),
             const SizedBox(width: 10,),
             Expanded(
-              child:  Container(
-                child: Text("${element.name}", style: const TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black
-                ),),
-              ),
+              child:  Text("${element.name}", style: const TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black
+              ),),
             ),
 
             const SizedBox(width: 10,),
@@ -251,10 +310,12 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
 
         if(gatewayOperator.name!.toLowerCase().contains('mtn')){
 
+
           _runTransactionChecker(gatewayOperator, widget.merchantTransactionId);
         }
 
         if(gatewayOperator.name!.toLowerCase().contains('moov')){
+
           _runTransactionChecker(gatewayOperator, widget.merchantTransactionId);
 
         }
@@ -483,14 +544,13 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   }
 
   _runTransactionChecker(GatewayOperator operator, String transactionId){
+
     _transactionCheckTimer = Timer.periodic(const Duration(milliseconds: 400), (timer) {
       _checkTransactionStatus(operator, transactionId);
     });
   }
 
   _checkTransactionStatus(GatewayOperator operator, String transactionId){
-
-    print("Date ${DateTime.now()}");
 
     if(!_isPaymentLoading){
 
@@ -503,34 +563,31 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
 
          if(value.status == GatewayTransaction.SUCCESSFUL){
 
-                hidePaymentLoader();
-            _transactionCheckTimer?.cancel();
-
-          }else if(value.status == GatewayTransaction.FAILED){
-           hidePaymentLoader();
-            _transactionCheckTimer?.cancel();
-           if(mounted){
-             Navigator.pop(context,value);
-           }
-          }else{
-
-          }
+           paymentStreamController.add(PaymentEvent(
+             currentState: PaymentState.COMPLETED,
+             success: true,
+             data: value
+           ));
+         }else if(value.status == GatewayTransaction.FAILED){
+           paymentStreamController.add(PaymentEvent(
+               currentState: PaymentState.COMPLETED,
+               success: false,
+               data: value
+           ));
+         }else{
+           paymentStreamController.add(PaymentEvent(
+               currentState: PaymentState.PENDING,
+               success: false,
+               data: value
+           ));
+         }
 
        }).catchError((onError){
-          hidePaymentLoader();
-          print("Error $onError");
-
-          if(onError is GatewayException ){
-            if(onError.status == GatewayTransaction.FAILED){
-              if(mounted){
-                Navigator.pop(context,GatewayTransaction.fromJson({
-                  'status':onError.status,
-                  'is_completed':true,
-                  'merchant_trans_id':transactionId
-                }));
-              }
-            }
-          }
+          paymentStreamController.add(PaymentEvent(
+              currentState: PaymentState.COMPLETED,
+              success: false,
+              data: onError
+          ));
 
     });
 
