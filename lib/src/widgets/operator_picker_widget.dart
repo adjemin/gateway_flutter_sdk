@@ -79,12 +79,13 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
       if(event.currentState == PaymentState.COMPLETED){
           print("paymentStreamController.stream.listen(($event) ");
           if(!listenerRunning){
+            hidePaymentLoader();
            listenerRunning = true;
            _transactionCheckTimer?.cancel();
 
            if(event.success){
 
-             hidePaymentLoader();
+
              _transactionCheckTimer?.cancel();
              if(mounted){
                Navigator.pop(context,event.data);
@@ -93,7 +94,6 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
            }else{
              if(event.data is GatewayException){
                _transactionCheckTimer?.cancel();
-
 
                if(mounted){
                  if(event.data.code == 300 && event.data.error!.contains('(203)')){
