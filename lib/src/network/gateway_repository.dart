@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:adjemin_gateway_sdk/adjemin_gateway_sdk.dart';
 import 'package:adjemin_gateway_sdk/src/models/gateway_transaction.dart';
-import 'package:adjemin_gateway_sdk/src/network/GatewayException.dart';
+import 'package:adjemin_gateway_sdk/src/network/gateway_exception.dart';
 import 'package:http/http.dart';
 
 abstract class IGatewayRepository{
@@ -14,6 +14,8 @@ abstract class IGatewayRepository{
     required String gatewayOperatorCode,
     required String merchantTransId,
     required String webhookUrl,
+    String? returnUrl,
+    String? cancelUrl,
     required String customerRecipientNumber,
     String? customerEmail,
     String? customerFirstname,
@@ -106,6 +108,8 @@ class GatewayRepository implements IGatewayRepository{
     required String gatewayOperatorCode,
     required String merchantTransId,
     required String webhookUrl,
+    String? returnUrl,
+    String? cancelUrl,
     required String customerRecipientNumber,
     String? customerEmail,
     String? customerFirstname,
@@ -123,7 +127,9 @@ class GatewayRepository implements IGatewayRepository{
       "customer_firstname":customerFirstname,
       "customer_lastname":customerLastname,
       "otp":otp,
-      "webhook_url":webhookUrl
+      "webhook_url":webhookUrl,
+      "return_url":returnUrl,
+      "cancel_url":cancelUrl
     })
     );
 

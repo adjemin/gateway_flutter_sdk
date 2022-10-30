@@ -6,10 +6,11 @@ import 'package:adjemin_gateway_sdk/src/models/customer.dart';
 import 'package:adjemin_gateway_sdk/src/models/gateway_transaction.dart';
 import 'package:adjemin_gateway_sdk/src/models/payment_event.dart';
 import 'package:adjemin_gateway_sdk/src/models/payment_state.dart';
-import 'package:adjemin_gateway_sdk/src/network/GatewayException.dart';
+import 'package:adjemin_gateway_sdk/src/network/gateway_exception.dart';
 import 'package:adjemin_gateway_sdk/src/network/gateway_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'cash_payment_widget.dart';
 import 'custom_progress_widget.dart';
@@ -28,6 +29,8 @@ class OperatorPickerWidget extends StatefulWidget {
   final String? description;
   final String merchantTransactionId;
   final String webhookUrl;
+  final String? returnUrl;
+  final String? cancelUrl;
   final String baseUrl;
 
   const OperatorPickerWidget({
@@ -38,6 +41,8 @@ class OperatorPickerWidget extends StatefulWidget {
     required this.amount,
     required this.merchantTransactionId,
     required this.webhookUrl,
+    this.returnUrl,
+    this.cancelUrl,
     this.description,
     this.customer
   });
@@ -84,7 +89,6 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
            _transactionCheckTimer?.cancel();
 
            if(event.success){
-
 
              _transactionCheckTimer?.cancel();
              if(mounted){
@@ -294,6 +298,8 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
         gatewayOperatorCode: gatewayOperator.payinCode!,
         merchantTransId: widget.merchantTransactionId,
         webhookUrl: widget.webhookUrl,
+        returnUrl: widget.returnUrl,
+        cancelUrl: widget.cancelUrl,
         customerRecipientNumber: customer.phoneNumber!,
         customerEmail: customer.email,
         customerFirstname: customer.firstName,
@@ -317,6 +323,18 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
         if(gatewayOperator.name!.toLowerCase().contains('moov')){
 
           _runTransactionChecker(gatewayOperator, widget.merchantTransactionId);
+
+        }
+
+        if(gatewayOperator.name!.toLowerCase().contains('wave')){
+
+          _runTransactionChecker(gatewayOperator, widget.merchantTransactionId);
+
+          if(value.paymentUrl != null){
+            //Open Payment URL
+            //final Uri _paymentUrl = Uri.parse(value.paymentUrl!);
+            _openPaymentUrl(value.paymentUrl!);
+          }
 
         }
 
@@ -491,6 +509,26 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
     }
 
     if(e.name!.toLowerCase().contains('moov')){
+      final  bool? hasPaymentResult  = await Navigator.push(context,
+          MaterialPageRoute(builder: (context)=> CashPaymentWidget(
+            customer:mCustomer,
+            operator:e,
+            amount:widget.amount,
+            merchantTransactionId: widget.merchantTransactionId,
+            description:widget.description,
+            isPayIn: widget.isPayIn,
+          ))
+      );
+
+      if(hasPaymentResult == true){
+        _pay(customer: mCustomer, gatewayOperator: e);
+      }else{
+        Navigator.of(context).pop();
+      }
+
+    }
+
+    if(e.name!.toLowerCase().contains('wave')){
       final  bool? hasPaymentResult  = await Navigator.push(context,
           MaterialPageRoute(builder: (context)=> CashPaymentWidget(
             customer:mCustomer,
@@ -695,6 +733,10 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
         ),
       );
     });
+  }
+
+   _openPaymentUrl(String paymentUrl) async{
+     await launch(paymentUrl);
   }
 
 }

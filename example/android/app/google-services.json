@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "766175124187",
+    "project_id": "test-adjemin-gateway",
+    "storage_bucket": "test-adjemin-gateway.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766175124187:android:e15279977710c148f48afe",
+        "android_client_info": {
+          "package_name": "com.example.example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "766175124187-hut4ng4ohgeofoa2r4pim56ibjjoprft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1e0nBLUxEy5L1OptsmBYH3Pc2SxS2TMI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "766175124187-hut4ng4ohgeofoa2r4pim56ibjjoprft.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

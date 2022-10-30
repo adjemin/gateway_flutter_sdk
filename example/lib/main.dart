@@ -1,16 +1,24 @@
 import 'package:adjemin_gateway_sdk/adjemin_gateway_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 
 import 'package:uuid/uuid.dart';
 
-void main() {
-  runApp(const MyApp());
+void main()async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  // Get any initial links
+  final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+
+  runApp(MyApp(initialLink:initialLink));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final PendingDynamicLinkData? initialLink;
+  const MyApp({Key? key,this.initialLink }) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -35,20 +43,36 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: HomeScreen(),
+      home: HomeScreen(initialLink: initialLink,),
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final PendingDynamicLinkData? initialLink;
+  const HomeScreen({Key? key, this.initialLink}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   var uuid = Uuid();
+  
+  @override
+  void initState() {
+    super.initState();
+    
+    print("deepLink ${widget.initialLink?.link.toString()}");
+
+    FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
+      //Navigator.pushNamed(context, dynamicLinkData.link.path);
+      print("deepLink ${dynamicLinkData.link.toString()}");
+    }).onError((error) {
+      // Handle errors
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,14 +82,44 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: ()async {
+
+          final String merchantTransId = uuid.v4();
+          final String baseUrl = "https://api-test.adjem.in";
+
+          final String returnUrl = "https://adjemin.page.link/vhUX";
+          final String cancelUrl = "https://adjemin.page.link/vhUX";
+          //final String returnUrl = "$baseUrl/v3/gateway/intouch/payments/success/$merchantTransId";
+          //final String cancelUrl = "$baseUrl/v3/gateway/intouch/payments/failure/$merchantTransId";
+
+          //Create a Dynamic Link from parameters
+          /*var dynamicLinkParams = DynamicLinkParameters(
+            link: Uri.parse(returnUrl),
+            uriPrefix: "https://testadjemingateway.page.link",
+            androidParameters: const AndroidParameters(packageName: "com.example.example"),
+            iosParameters: const IOSParameters(bundleId: "com.example.example"),
+          );
+          final returnDynamicLink =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+
+          dynamicLinkParams = DynamicLinkParameters(
+            link: Uri.parse(cancelUrl),
+            uriPrefix: "https://testadjemingateway.page.link",
+            androidParameters: const AndroidParameters(packageName: "com.example.example"),
+            iosParameters: const IOSParameters(bundleId: "com.example.example"),
+          );
+          final cancelDynamicLink =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);*/
+
           final GatewayTransaction? result = await Navigator.push(context,
               MaterialPageRoute(builder: (context)=> OperatorPickerWidget(
-                baseUrl: "https://api-test.adjem.in",
+                baseUrl: baseUrl,
                 title: 'Payer une commande',
                 description: 'Payer une commande',
                 amount: 100,
-                merchantTransactionId: uuid.v4(),
+                merchantTransactionId: merchantTransId,
                 webhookUrl:"https://adjemin.com",
+                returnUrl:returnUrl,
+                cancelUrl:cancelUrl,
                 isPayIn: true,
                 countryCode: Country.CI,
                 customer: Customer(

@@ -43,5 +43,10 @@
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+
+	<key>FirebaseDynamicLinksCustomDomains</key>
+    <array>
+        <string>https://testadjemingateway.page.link</string>
+    </array>
 </dict>
 </plist>
