@@ -88,27 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final String returnUrl = "https://adjemin.page.link/vhUX";
           final String cancelUrl = "https://adjemin.page.link/vhUX";
-          //final String returnUrl = "$baseUrl/v3/gateway/intouch/payments/success/$merchantTransId";
-          //final String cancelUrl = "$baseUrl/v3/gateway/intouch/payments/failure/$merchantTransId";
-
-          //Create a Dynamic Link from parameters
-          /*var dynamicLinkParams = DynamicLinkParameters(
-            link: Uri.parse(returnUrl),
-            uriPrefix: "https://testadjemingateway.page.link",
-            androidParameters: const AndroidParameters(packageName: "com.example.example"),
-            iosParameters: const IOSParameters(bundleId: "com.example.example"),
-          );
-          final returnDynamicLink =
-          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-
-          dynamicLinkParams = DynamicLinkParameters(
-            link: Uri.parse(cancelUrl),
-            uriPrefix: "https://testadjemingateway.page.link",
-            androidParameters: const AndroidParameters(packageName: "com.example.example"),
-            iosParameters: const IOSParameters(bundleId: "com.example.example"),
-          );
-          final cancelDynamicLink =
-          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);*/
 
           final GatewayTransaction? result = await Navigator.push(context,
               MaterialPageRoute(builder: (context)=> OperatorPickerWidget(
