@@ -1,24 +1,18 @@
 import 'package:adjemin_gateway_sdk/adjemin_gateway_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 
 import 'package:uuid/uuid.dart';
 
-void main()async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  // Get any initial links
-  final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-
-  runApp(MyApp(initialLink:initialLink));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final PendingDynamicLinkData? initialLink;
-  const MyApp({Key? key,this.initialLink }) : super(key: key);
+
+  const MyApp({Key? key }) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -43,14 +37,14 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: HomeScreen(initialLink: initialLink,),
+      home: HomeScreen(),
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
-  final PendingDynamicLinkData? initialLink;
-  const HomeScreen({Key? key, this.initialLink}) : super(key: key);
+
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -63,15 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    
-    print("deepLink ${widget.initialLink?.link.toString()}");
 
-    FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
-      //Navigator.pushNamed(context, dynamicLinkData.link.path);
-      print("deepLink ${dynamicLinkData.link.toString()}");
-    }).onError((error) {
-      // Handle errors
-    });
   }
 
   @override
