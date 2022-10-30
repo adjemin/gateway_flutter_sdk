@@ -73,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
           final String baseUrl = "https://api-test.adjem.in";
 
           final String returnUrl = "https://adjemin.page.link/vhUX";
-          final String cancelUrl = "https://adjemin.page.link/vhUX";
 
           final GatewayTransaction? result = await Navigator.push(context,
               MaterialPageRoute(builder: (context)=> OperatorPickerWidget(
@@ -84,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 merchantTransactionId: merchantTransId,
                 webhookUrl:"https://adjemin.com",
                 returnUrl:returnUrl,
-                cancelUrl:cancelUrl,
+                cancelUrl:returnUrl,
                 isPayIn: true,
                 countryCode: Country.CI,
                 customer: Customer(
