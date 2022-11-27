@@ -69,7 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: ()async {
 
-          final String merchantTransId = uuid.v4();
+          final String merchantTransId = uuid.v4().split('-').last;
+          print("merchantTransId => $merchantTransId");
           final String baseUrl = "https://api-test.adjem.in";
 
           final String returnUrl = "https://adjemin.page.link/vhUX";

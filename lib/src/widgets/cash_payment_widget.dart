@@ -99,7 +99,7 @@ class _CashPaymentWidgetState extends State<CashPaymentWidget> {
             ),
           ),
 
-          Container(
+          widget.operator.name!.toLowerCase().contains('carte')?const SizedBox():Container(
             width: MediaQuery.of(context).size.width,
             alignment: Alignment.center,
             margin: EdgeInsets.symmetric(horizontal: 16.0),
@@ -212,7 +212,7 @@ class _CashPaymentWidgetState extends State<CashPaymentWidget> {
                         child: Text("${widget.operator.name}",
                           style: Theme.of(context).textTheme.headline6,),
                       ),
-                      Container(
+                      widget.operator.name!.toLowerCase().contains('carte')?const SizedBox():Container(
                         alignment: Alignment.topLeft,
                         child: Text("+${widget.customer.dialCode} ${widget.customer.phoneNumber}",
                          style: Theme.of(context).textTheme.headline6?.copyWith(
@@ -220,6 +220,7 @@ class _CashPaymentWidgetState extends State<CashPaymentWidget> {
                          ),
                         ),
                       ),
+                      widget.operator.name!.toLowerCase().contains('carte')?const SizedBox():
                       Container(
                         alignment: Alignment.topLeft,
                         child: Text("Ce numéro de téléphone sera débité du montant à payer",
@@ -241,5 +242,7 @@ class _CashPaymentWidgetState extends State<CashPaymentWidget> {
       ),
     );
   }
+
+
 
 }

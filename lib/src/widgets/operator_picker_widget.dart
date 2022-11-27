@@ -233,11 +233,18 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
               onTap: ()async{
                 //Navigator.of(context).pop(e);
 
-                final Customer? mCustomer  = await Navigator.push(context,
-                    MaterialPageRoute(builder: (context)=> CustomerFormWidget(
-                      customer:widget.customer
-                    ))
-                );
+                Customer? mCustomer;
+                print("Operator => ${e.name!.toLowerCase().contains('carte bancaire')}");
+                if(e.name!.toLowerCase().contains('carte')){
+                  mCustomer = widget.customer;
+                }else{
+                  mCustomer  = await Navigator.push(context,
+                      MaterialPageRoute(builder: (context)=> CustomerFormWidget(
+                          customer:widget.customer
+                      ))
+                  );
+                }
+
 
                 if(mCustomer != null){
 
@@ -327,6 +334,19 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
         }
 
         if(gatewayOperator.name!.toLowerCase().contains('wave')){
+
+          _runTransactionChecker(gatewayOperator, widget.merchantTransactionId);
+
+          if(value.paymentUrl != null){
+            //Open Payment URL
+            //final Uri _paymentUrl = Uri.parse(value.paymentUrl!);
+            _openPaymentUrl(value.paymentUrl!);
+          }
+
+        }
+
+        //TODO carte bancaire
+        if(gatewayOperator.name!.toLowerCase().contains('carte')){
 
           _runTransactionChecker(gatewayOperator, widget.merchantTransactionId);
 
@@ -434,18 +454,20 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
             const SizedBox(height: 20,),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              alignment: Alignment.center,
               child: Text(getLoadingMessage(widget.isPayIn,_paymentOperatorSelected!, _isWaitingAcceptation),
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyText2?.copyWith(
                   fontSize: 16
                 ),),
             ),
 
             const SizedBox(height: 100,),
-            Center(
-              child: Container(
+            const Center(
+              child: SizedBox(
                 height: 100.0,
                 width: 100.0,
-                child: const CircularProgressIndicator(
+                child: CircularProgressIndicator(
                   strokeWidth: 10.0,
                 ),
               ),
@@ -540,6 +562,30 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
           ))
       );
 
+
+
+      if(hasPaymentResult == true){
+        _pay(customer: mCustomer, gatewayOperator: e);
+      }else{
+        Navigator.of(context).pop();
+      }
+
+    }
+
+    if(e.name!.toLowerCase().contains('carte')){
+      final  bool? hasPaymentResult  = await Navigator.push(context,
+          MaterialPageRoute(builder: (context)=> CashPaymentWidget(
+            customer:mCustomer,
+            operator:e,
+            amount:widget.amount,
+            merchantTransactionId: widget.merchantTransactionId,
+            description:widget.description,
+            isPayIn: widget.isPayIn,
+          ))
+      );
+
+
+
       if(hasPaymentResult == true){
         _pay(customer: mCustomer, gatewayOperator: e);
       }else{
@@ -569,6 +615,8 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
         return "Veuillez patienter, nous vous redirigeons vers le portail de paiement ${_paymentOperatorSelected!.name}.";
       }else if(operator.name!.toLowerCase().contains("orange")){
         return "Traitement de la transaction ${_paymentOperatorSelected!.name} en cours...";
+      }else if(operator.name!.toLowerCase().contains("carte")){
+        return "Veuillez patienter, nous vous redirigeons vers le portail de paiement par  ${_paymentOperatorSelected!.name}.";
       }else{
         return "En attente de validation de la transaction.";
       }
@@ -681,7 +729,6 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
         color: Colors.white,
         child: Column(
           children: [
-
             Container(
               child: Text("$title",style: Theme.of(context).textTheme.headline6),
             ),
