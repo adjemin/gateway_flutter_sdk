@@ -26,21 +26,32 @@ class OperatorPickerWidget extends StatefulWidget {
   final String title;
   final Customer? customer;
   final int amount;
+  final String currencyCode;
   final String? description;
   final String merchantTransactionId;
   final String webhookUrl;
   final String? returnUrl;
   final String? cancelUrl;
   final String baseUrl;
+  final String clientId;
+  final String clientSecret;
+  final String sellerUsername;
+  final String paymentType;
 
   const OperatorPickerWidget({
     required this.baseUrl,
+    required this.clientId,
+    required this.clientSecret,
+    required this.sellerUsername,
+    required this.paymentType,
     required this.countryCode,
     required this.isPayIn,
     required this.title,
     required this.amount,
+    required this.currencyCode,
     required this.merchantTransactionId,
     required this.webhookUrl,
+
     this.returnUrl,
     this.cancelUrl,
     this.description,
@@ -176,6 +187,8 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
 
     showProgress();
 
+    _createPayment();
+
     GatewayRepository()
         .findOperatorsByCountry(widget.baseUrl,widget.countryCode.toString().split('.').last)
         .then((value){
@@ -297,11 +310,74 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
     );
   }
 
+  void _createPayment(){
+
+    GatewayRepository().createPayment(
+        baseUrl: widget.baseUrl,
+        clientId: widget.clientId,
+        clientSecret: widget.clientSecret ,
+        amount: widget.amount,
+        currencyCode: widget.currencyCode,
+        merchantTransId: widget.merchantTransactionId,
+        sellerUsername: widget.sellerUsername,
+        paymentType: widget.paymentType,
+        designation: widget.description??"Paiement de facture",
+        webhookUrl: widget.webhookUrl,
+        returnUrl: widget.returnUrl,
+        cancelUrl: widget.cancelUrl,
+        customerEmail: widget.customer?.email,
+        customerFirstname: widget.customer?.firstName,
+        customerLastname: widget.customer?.lastName,
+        customerRecipientNumber: widget.customer?.phoneNumber
+    ).then((value){
+
+
+    })
+        .catchError((onError){
+
+      print("Error $onError");
+
+      hideProgress();
+
+      if(onError is SocketException){
+        displayErrorMessage(context, "Vous n'avez pas accès à internet !", (){
+          Navigator.of(context).pop();
+        });
+      }else if(onError is TimeoutException){
+        displayErrorMessage(context, "Votre connexion est instable !", (){
+          Navigator.of(context).pop();
+        });
+      }else if(onError is GatewayException){
+        if(onError.code == 300 && onError.error!.contains('(203)')){
+          displayErrorMessage(context, "Une transaction similaire a été effectuée récemment, veuillez patienter 15 mins avant de réessayer", (){
+            Navigator.of(context).pop();
+          });
+        }else{
+          displayErrorMessage(context, onError.error??onError.message!, (){
+            Navigator.of(context).pop();
+          });
+        }
+
+      } else{
+        displayErrorMessage(context, "Désolé, nous rencontrons des problèmes, revenez plutard.", (){
+          Navigator.of(context).pop();
+        });
+      }
+
+    });
+
+  }
+
+
   void _pay({required Customer customer, required GatewayOperator gatewayOperator, String? otp}){
     showPaymentLoader(gatewayOperator);
+
     GatewayRepository().makePayment(
         baseUrl: widget.baseUrl,
+        clientId: widget.clientId,
+        clientSecret: widget.clientSecret ,
         amount: widget.amount,
+        designation:widget.description??"Paiement de facture",
         gatewayOperatorCode: gatewayOperator.payinCode!,
         merchantTransId: widget.merchantTransactionId,
         webhookUrl: widget.webhookUrl,
@@ -644,7 +720,12 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
     }
 
     GatewayRepository()
-        .checkPaymentStatus(widget.baseUrl,transactionId)
+        .checkPaymentStatus(
+      baseUrl:widget.baseUrl,
+      merchantTransactionId:transactionId,
+      clientId: widget.clientId,
+      clientSecret: widget.clientSecret
+    )
         .then((value){
 
          if(value.status == GatewayTransaction.SUCCESSFUL){

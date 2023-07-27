@@ -1,12 +1,13 @@
 import 'package:adjemin_gateway_sdk/adjemin_gateway_sdk.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 import 'package:uuid/uuid.dart';
 
-void main() {
+void main()async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: "lib/.env");
   runApp(MyApp());
 }
 
@@ -71,18 +72,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final String merchantTransId = uuid.v4().split('-').last;
           print("merchantTransId => $merchantTransId");
-          final String baseUrl = "https://api-test.adjem.in";
+          final String baseUrl = "https://api.adjem.in";
 
           final String returnUrl = "https://adjemin.page.link/vhUX";
 
           final GatewayTransaction? result = await Navigator.push(context,
               MaterialPageRoute(builder: (context)=> OperatorPickerWidget(
                 baseUrl: baseUrl,
+                clientId: dotenv.env['CLIENT_ID']!,
+                clientSecret: dotenv.env['CLIENT_SECRET']!,
+                sellerUsername: dotenv.env['SELLER_USERNAME']!,
+                paymentType: 'gateway',
                 title: 'Payer une commande',
-                description: 'Payer une commande',
+                description: 'Paiement apport initial',
                 amount: 100,
+                currencyCode: "XOF",
                 merchantTransactionId: merchantTransId,
-                webhookUrl:"https://adjemin.com",
+                webhookUrl:"https://api.donypay.com/v1/customers/payments/adjeminpay/callback",
                 returnUrl:returnUrl,
                 cancelUrl:returnUrl,
                 isPayIn: true,
