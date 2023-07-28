@@ -13,18 +13,25 @@ Add the adjemin_gateway_sdk package as a dependancy in your `pubspec.yaml` file.
         sdk: flutter
     adjemin_gateway_sdk:
       git:
-        url: git@gitlab.com:adjemin/adjemin_gateway_sdk.git
+        url: https://github.com/adjemin/gateway_flutter_sdk.git
+        ref: main
 ```
 ## 3. How to use
 You must use `OperatorPickerWidget`
 ```dart
 OperatorPickerWidget(
-    baseUrl: 'https://api-test.adjem.in',
+    baseUrl: 'https://api.adjem.in',
+    clientId: 'CLIENT_ID',
+    clientSecret: 'CLIENT_SECRET',
+    sellerUsername: 'SELLER_USERNAME',
+    paymentType: 'gateway',
     title: 'Payer une commande',
     description: 'Payer une commande',
     amount: 100,
     merchantTransactionId: uuid.v4(),
-    webhookUrl:"https://adjemin.com",
+    webhookUrl:"https://your-webhook-url/v1/customers/payments/callback",
+    returnUrl:"https://your-return-url",
+    cancelUrl:"https://your-cancel-url",
     isPayIn: true,
     countryCode: Country.CI,
     customer: Customer(

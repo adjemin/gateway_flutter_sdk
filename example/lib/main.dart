@@ -74,8 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
           print("merchantTransId => $merchantTransId");
           final String baseUrl = "https://api.adjem.in";
 
-          final String returnUrl = "https://adjemin.page.link/vhUX";
-
           final GatewayTransaction? result = await Navigator.push(context,
               MaterialPageRoute(builder: (context)=> OperatorPickerWidget(
                 baseUrl: baseUrl,
@@ -88,9 +86,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 amount: 100,
                 currencyCode: "XOF",
                 merchantTransactionId: merchantTransId,
-                webhookUrl:"https://api.donypay.com/v1/customers/payments/adjeminpay/callback",
-                returnUrl:returnUrl,
-                cancelUrl:returnUrl,
+                webhookUrl:"https://your-webhook-url/v1/customers/payments/callback",
+                returnUrl:"https://your-return-url",
+                cancelUrl:"https://your-cancel-url",
                 isPayIn: true,
                 countryCode: Country.CI,
                 customer: Customer(
