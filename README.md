@@ -52,17 +52,20 @@ Example
 ```dart
 import 'package:adjemin_gateway_sdk/adjemin_gateway_sdk.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 import 'package:uuid/uuid.dart';
 
-void main() {
-  runApp(const MyApp());
+void main()async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: "lib/.env");
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+
+  const MyApp({Key? key }) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -93,6 +96,7 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
+
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
@@ -100,7 +104,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   var uuid = Uuid();
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,14 +121,26 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: ()async {
+
+          final String merchantTransId = uuid.v4().split('-').last;
+          print("merchantTransId => $merchantTransId");
+          final String baseUrl = "https://api.adjem.in";
+
           final GatewayTransaction? result = await Navigator.push(context,
               MaterialPageRoute(builder: (context)=> OperatorPickerWidget(
-                baseUrl:'https://api-test.adjem.in',
+                baseUrl: baseUrl,
+                clientId: dotenv.env['CLIENT_ID']!,
+                clientSecret: dotenv.env['CLIENT_SECRET']!,
+                sellerUsername: dotenv.env['SELLER_USERNAME']!,
+                paymentType: 'gateway',
                 title: 'Payer une commande',
-                description: 'Payer une commande',
+                description: 'Paiement apport initial',
                 amount: 100,
-                merchantTransactionId: uuid.v4(),
-                webhookUrl:"https://adjemin.com",
+                currencyCode: "XOF",
+                merchantTransactionId: merchantTransId,
+                webhookUrl:"https://your-webhook-url/v1/customers/payments/callback",
+                returnUrl:"https://your-return-url",
+                cancelUrl:"https://your-cancel-url",
                 isPayIn: true,
                 countryCode: Country.CI,
                 customer: Customer(
@@ -134,15 +157,12 @@ class _HomeScreenState extends State<HomeScreen> {
           if(result != null){
 
             print("Payment result =>>  $result");
-            
-            //result.status can be GatewayTransaction.SUCCESSFUL
-            //result.status can be GatewayTransaction.FAILED
-            //result.status can be GatewayTransaction.PENDING
-            //result.status can be GatewayTransaction.INITIATED
 
             displayErrorMessage(context, "${result.merchantTransId} ${result.status}", (){
 
             });
+
+          }else{
 
           }
         },
@@ -194,6 +214,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 }
+
+
 
 ```
 
