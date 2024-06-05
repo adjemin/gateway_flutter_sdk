@@ -91,7 +91,7 @@ class _CustomerFormWidgetState extends State<CustomerFormWidget> {
                           SizedBox(width: 10,),
                           Expanded(
                             child:  Container(
-                              child: Text("Utiliser un autre numéro de téléphone", style: Theme.of(context).textTheme.bodyText2,),
+                              child: Text("Utiliser un autre numéro de téléphone", style: Theme.of(context).textTheme.bodyMedium,),
                             ),
                           ),
 
@@ -140,11 +140,11 @@ class _CustomerFormWidgetState extends State<CustomerFormWidget> {
                   children: [
                     Container(
                       alignment: Alignment.topLeft,
-                      child: Text("Utiliser mon numéro", style: Theme.of(context).textTheme.bodyText2,),
+                      child: Text("Utiliser mon numéro", style: Theme.of(context).textTheme.bodyMedium,),
                     ),
                     Container(
                       alignment: Alignment.topLeft,
-                      child: Text("${customer.phoneNumber}", style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                      child: Text("${customer.phoneNumber}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(
 
                           color: Colors.grey[500]
                       ),),
@@ -214,8 +214,8 @@ class _CustomerFormWidgetState extends State<CustomerFormWidget> {
 
               },
               style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
-                  textStyle: MaterialStateProperty.all(Theme.of(context).textTheme.button?.copyWith(
+                  backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.secondary),
+                  textStyle: WidgetStateProperty.all(TextStyle(
                       color: Colors.white,
                       fontSize: 19
                   ))

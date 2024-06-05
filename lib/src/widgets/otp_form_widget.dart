@@ -20,37 +20,37 @@ class _OtpFormWidgetState extends State<OtpFormWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),),
+        title: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
 
-            SizedBox(height: 50.0,),
+            const SizedBox(height: 50.0,),
 
             Center(
               child:  Image.network(widget.gatewayOperator.image!, width: 80,height: 80,),
             ),
-            SizedBox(height: 10.0,),
+            const SizedBox(height: 10.0,),
             Container(
-              child: Text("${widget.gatewayOperator.name}", style: TextStyle(
+              child: Text("${widget.gatewayOperator.name}", style: const TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.black
               ),),
             ),
 
-            SizedBox(height: 20.0,),
+            const SizedBox(height: 20.0,),
             Container(
               child: Text("Obtenez un code validation en cliquant sur", style: Theme.of(context)
-                .textTheme.subtitle1,),
+                .textTheme.titleSmall,),
             ),
-            SizedBox(height: 20.0,),
+            const SizedBox(height: 20.0,),
             Container(
               width: 200,
               child: ElevatedButton(
                   style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
+                      backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.secondary),
                   ),
                 onPressed: ()async{
                  await _makePhoneCall("#144*82#");
@@ -58,32 +58,32 @@ class _OtpFormWidgetState extends State<OtpFormWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.phone),
-                    SizedBox(width: 20.0,),
-                    Text("#144*82#", style: Theme.of(context).textTheme.headline5!.copyWith(
+                    const Icon(Icons.phone),
+                    const SizedBox(width: 20.0,),
+                    Text("#144*82#", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                     ),)
                   ],
                 ),
               ) ,
             ),
-            SizedBox(height: 40.0,),
+            const SizedBox(height: 40.0,),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text("Entrez le code reçu  dans le champs ci-dessous:", style: Theme.of(context)
-                  .textTheme.subtitle1,),
+                  .textTheme.titleSmall,),
             ),
 
 
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: OTPTextField(
                 length: 4,
                 width: MediaQuery.of(context).size.width,
                 textFieldAlignment: MainAxisAlignment.spaceAround,
                 fieldWidth:( MediaQuery.of(context).size.width/4) - 40,
                 fieldStyle: FieldStyle.underline,
-                style: Theme.of(context).textTheme.headline3!.copyWith(
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   color: Colors.black
                 ),
                 onCompleted: (pin) {
@@ -93,7 +93,7 @@ class _OtpFormWidgetState extends State<OtpFormWidget> {
                 },
               ),
             ),
-            SizedBox(height: 20.0,),
+            const SizedBox(height: 20.0,),
 
           ],
         ),

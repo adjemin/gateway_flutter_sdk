@@ -198,8 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   action();
                 },
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
-                    textStyle: MaterialStateProperty.all(Theme.of(context).textTheme.button?.copyWith(
+                    backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.secondary),
+                    textStyle: WidgetStateProperty.all(Theme.of(context).textTheme.button?.copyWith(
                         color: Colors.white,
                         fontSize: 19
                     ))

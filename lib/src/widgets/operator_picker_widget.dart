@@ -245,7 +245,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
             alignment: Alignment.topLeft,
             padding: const EdgeInsets.all(8.0),
             child: Text("Sélectionnez un moyen de paiement",
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleSmall,
             ),
           ),
           Column(
@@ -515,7 +515,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                 const SizedBox(width: 20,),
                 Container(
                   child: Text("Transaction en cours",
-                    style: Theme.of(context).textTheme.headline5,),
+                    style: Theme.of(context).textTheme.headlineSmall,),
                 ),
                 const SizedBox(width: 50,),
                 GestureDetector(
@@ -532,14 +532,14 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
             ),
             const SizedBox(height: 10,),
             Text("${_paymentOperatorSelected!.name!}",
-            style: Theme.of(context).textTheme.headline6,),
+            style: Theme.of(context).textTheme.headlineSmall,),
             const SizedBox(height: 20,),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               alignment: Alignment.center,
               child: Text(getLoadingMessage(widget.isPayIn,_paymentOperatorSelected!, _isWaitingAcceptation),
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontSize: 16
                 ),),
             ),
@@ -782,11 +782,11 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
           children: [
 
             Container(
-              child: Text("Erreur rencontrée",style: Theme.of(context).textTheme.headline6),
+              child: Text("Erreur rencontrée",style: Theme.of(context).textTheme.headlineSmall),
             ),
             const SizedBox(height: 20,),
             Container(
-              child: Text(message,style: Theme.of(context).textTheme.bodyText1),
+              child: Text(message,style: Theme.of(context).textTheme.bodyMedium),
             ),
             const SizedBox(height: 20,),
             Container(
@@ -798,8 +798,8 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                   action();
                 },
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
-                    textStyle: MaterialStateProperty.all(Theme.of(context).textTheme.button?.copyWith(
+                    backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.secondary),
+                    textStyle: WidgetStateProperty.all(TextStyle(
                         color: Colors.white,
                         fontSize: 19
                     ))
@@ -823,11 +823,11 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
         child: Column(
           children: [
             Container(
-              child: Text("$title",style: Theme.of(context).textTheme.headline6),
+              child: Text("$title",style: Theme.of(context).textTheme.headlineSmall),
             ),
             const SizedBox(height: 20,),
             Container(
-              child: Text(message,style: Theme.of(context).textTheme.bodyText1),
+              child: Text(message,style: Theme.of(context).textTheme.bodyMedium),
             ),
             const SizedBox(height: 20,),
             Container(
@@ -839,8 +839,8 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                   positive();
                 },
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
-                    textStyle: MaterialStateProperty.all(Theme.of(context).textTheme.button?.copyWith(
+                    backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.secondary),
+                    textStyle: WidgetStateProperty.all(TextStyle(
                         color: Colors.white,
                         fontSize: 19
                     ))
@@ -858,8 +858,8 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                   negative();
                 },
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.primary),
-                    textStyle: MaterialStateProperty.all(Theme.of(context).textTheme.button?.copyWith(
+                    backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.primary),
+                    textStyle: WidgetStateProperty.all(TextStyle(
                         color: Colors.white,
                         fontSize: 19
                     ))

@@ -130,11 +130,11 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
 
             Container(
-              child: Text("Message",style: Theme.of(context).textTheme.headline6),
+              child: Text("Message",style: Theme.of(context).textTheme.headlineMedium),
             ),
             const SizedBox(height: 20,),
             Container(
-              child: Text(message,style: Theme.of(context).textTheme.bodyText1),
+              child: Text(message,style: Theme.of(context).textTheme.bodyMedium),
             ),
             const SizedBox(height: 20,),
             Container(
@@ -146,8 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   action();
                 },
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
-                    textStyle: MaterialStateProperty.all(Theme.of(context).textTheme.button?.copyWith(
+                    backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.secondary),
+                    textStyle: WidgetStateProperty.all(TextStyle(
                         color: Colors.white,
                         fontSize: 19
                     ))

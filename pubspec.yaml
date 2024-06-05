@@ -1,6 +1,6 @@
 name: adjemin_gateway_sdk
 description: Gateway sdk to allow payment and transfer in Adjemin app
-version: 1.11.6
+version: 1.11.7
 homepage: https://gitlab.com/adjeminplateform/adjemin_gateway_sdk
 
 environment:
