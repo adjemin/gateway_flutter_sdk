@@ -8,7 +8,7 @@ import 'package:uuid/uuid.dart';
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: "lib/.env");
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }
@@ -53,7 +53,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  var uuid = Uuid();
+  var uuid = const Uuid();
   
   @override
   void initState() {
@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        title: const Text("Home"),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: ()async {
@@ -86,12 +86,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 amount: 100,
                 currencyCode: "XOF",
                 merchantTransactionId: merchantTransId,
-                webhookUrl:"https://your-webhook-url/v1/customers/payments/callback",
-                returnUrl:"https://your-return-url",
-                cancelUrl:"https://your-cancel-url",
+                webhookUrl:"https://example.com",
+                returnUrl:"https://example.com/",
+                cancelUrl:"https://example.com/",
                 isPayIn: true,
                 countryCode: Country.CI,
-                customer: Customer(
+                customer: const Customer(
                     firstName: "Ange",
                     lastName: "Bagui",
                     photoUrl: "https://i.imgur.com/dAApjNt.jpg",
@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           }
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
 
       ),
     );
@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
   displayErrorMessage(BuildContext context, String message, Function() action){
     showModalBottomSheet(context: context, builder: (ctext){
       return Container(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         height: 200,
         color: Colors.white,
         child: Column(
@@ -132,11 +132,11 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               child: Text("Message",style: Theme.of(context).textTheme.headline6),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Container(
               child: Text(message,style: Theme.of(context).textTheme.bodyText1),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Container(
               width: MediaQuery.of(context).size.width,
               height: 50,
@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontSize: 19
                     ))
                 ),
-                child:Text("D'accord",) ,
+                child:const Text("D'accord",) ,
               ),
             ),
 

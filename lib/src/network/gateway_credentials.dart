@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:adjemin_gateway_sdk/src/models/access_token.dart';
 import 'package:adjemin_gateway_sdk/src/network/gateway_exception.dart';
 import 'package:adjemin_gateway_sdk/src/utils/jwt_decoder.dart';
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 
 abstract class IGatewayCredentials{
 
@@ -42,7 +42,7 @@ class GatewayCredentials implements IGatewayCredentials{
     if(_token != null){
 
       //check if the token has expired
-      print("Check if the token has expired");
+     // print("Check if the token has expired");
      final bool hasExpired = JwtDecoder.isExpired(_token!.accessToken!);
 
       if(hasExpired){//Token has expired
@@ -62,24 +62,30 @@ class GatewayCredentials implements IGatewayCredentials{
    required String clientId,
    required String clientSecret}) async{
 
-   final url = Uri.parse("$baseUrl/v3/oauth/token");
+   final dio = Dio();
 
-   final response = await post(url,
-       body: {
+   final url = "$baseUrl/v3/oauth/token";
+
+   final response = await dio.post(url,
+       data: {
          "client_id":clientId,
          "client_secret":clientSecret,
          "grant_type":"client_credentials"
        },
-     headers: {
-       'Accept': 'application/json',
-       'Content-Type': 'application/x-www-form-urlencoded'
-     }
+     options: Options(
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/x-www-form-urlencoded'
+         }
+     )
    );
 
-   //print("_obtainAccessToken() ==>>> BODY ${response.body}");
+   //print("_obtainAccessToken() ==>>> BODY ${response.data.toString()}");
 
    if(response.statusCode == 200){
-     final Map<String, dynamic> json  = jsonDecode(response.body);
+     final Map<String, dynamic> json  = response.data;
+     //print("_obtainAccessToken() ==>>> BODY $json");
+
      if(json != null){
        return AccessToken.fromJson(json);
      }else{
@@ -94,7 +100,7 @@ class GatewayCredentials implements IGatewayCredentials{
    }else{
 
      if(response.headers['content-type'] == 'application/json'){
-       final Map<String, dynamic> json  = jsonDecode(response.body);
+       final Map<String, dynamic> json  = jsonDecode(response.data.toString());
        throw GatewayException(
            message: json.containsKey('message')?json['message']:'',
            error: json.containsKey('error')?json['error']:'',

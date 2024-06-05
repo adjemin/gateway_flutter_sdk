@@ -8,8 +8,8 @@ import 'package:adjemin_gateway_sdk/src/models/payment_event.dart';
 import 'package:adjemin_gateway_sdk/src/models/payment_state.dart';
 import 'package:adjemin_gateway_sdk/src/network/gateway_exception.dart';
 import 'package:adjemin_gateway_sdk/src/network/gateway_repository.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'cash_payment_widget.dart';
@@ -107,6 +107,9 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
              }
 
            }else{
+
+             print("EVENT => ${event.data}");
+             
              if(event.data is GatewayException){
                _transactionCheckTimer?.cancel();
 
@@ -129,6 +132,10 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                    });
                  }
                }
+             }else if(event.data is HandshakeException){
+
+             }else{
+
              }
            }
 
@@ -156,8 +163,8 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
   Widget build(BuildContext context) {
 
 
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: _isPaymentLoading?_buildPaymentLoadingUi():
       Scaffold(
         appBar: AppBar(
@@ -207,7 +214,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
          print("Error $onError");
 
          if(onError is Response){
-           print("Body ${onError.body}");
+           print("Body ${onError.data.toString()}");
          }
 
        });
@@ -332,8 +339,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
     ).then((value){
 
 
-    })
-        .catchError((onError){
+    }).catchError((onError){
 
       print("Error $onError");
 
@@ -750,11 +756,17 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
          }
 
        }).catchError((onError){
-          paymentStreamController.add(PaymentEvent(
-              currentState: PaymentState.COMPLETED,
-              success: false,
-              data: onError
-          ));
+         print("Error _checkTransactionStatus() =>>> $onError");
+         if(onError is HandshakeException || onError is DioException){
+            _checkTransactionStatus(operator, transactionId);
+         }else{
+           paymentStreamController.add(PaymentEvent(
+               currentState: PaymentState.COMPLETED,
+               success: false,
+               data: onError
+           ));
+         }
+
 
     });
 

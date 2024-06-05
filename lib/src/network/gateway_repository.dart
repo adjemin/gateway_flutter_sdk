@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:adjemin_gateway_sdk/adjemin_gateway_sdk.dart';
 import 'package:adjemin_gateway_sdk/src/models/gateway_transaction.dart';
 import 'package:adjemin_gateway_sdk/src/network/gateway_credentials.dart';
 import 'package:adjemin_gateway_sdk/src/network/gateway_exception.dart';
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 
 abstract class IGatewayRepository{
 
@@ -81,20 +79,24 @@ class GatewayRepository implements IGatewayRepository{
     required String merchantTransactionId
    })async {
 
+    final dio = Dio();
+
     final authCredential = await GatewayCredentials().getAccessToken(baseUrl: baseUrl, clientId: clientId, clientSecret: clientSecret);
 
+    final url = "$baseUrl/v3/gateway/merchants/payment/$merchantTransactionId";
 
-    final url = Uri.parse("$baseUrl/v3/gateway/merchants/payment/$merchantTransactionId");
+    final response = await dio.get(url, options: Options(
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${authCredential.accessToken}'
+      }
+    ));
 
-    final response = await get(url,headers: {
-      'Accept': 'application/json',
-      'Authorization': 'Bearer ${authCredential.accessToken}'
-    });
-
-    print('checkPaymentStatus() =>>> REQ => ${response.body}');
+    print('checkPaymentStatus() =>>> Uri => ${response.requestOptions.path}');
+    print('checkPaymentStatus() =>>> response.statusCode => ${response.statusCode}');
 
     if(response.statusCode == 200){
-      final Map<String, dynamic> json  = jsonDecode(response.body);
+      final Map<String, dynamic> json  = response.data;
       final bool success = json['success'];
       if(success){
         final Map<String, dynamic> data = json['data'];
@@ -111,7 +113,7 @@ class GatewayRepository implements IGatewayRepository{
     }else{
 
       if(response.headers['content-type'] == 'application/json'){
-        final Map<String, dynamic> json  = jsonDecode(response.body);
+        final Map<String, dynamic> json  = response.data;
         throw GatewayException(
             message: json.containsKey('message')?json['message']:'',
             error: json.containsKey('error')?json['error']:'',
@@ -128,11 +130,12 @@ class GatewayRepository implements IGatewayRepository{
 
   @override
   Future<List<GatewayOperator>> findOperatorsByCountry(String baseUrl,String countryIso)async {
-   final url = Uri.parse("$baseUrl/v3/gateway/operators/$countryIso");
+   final url = "$baseUrl/v3/gateway/operators/$countryIso";
 
-   final response = await get(url);
+   final dio = Dio();
+   final response = await dio.get(url);
    if(response.statusCode == 200){
-     final Map<String, dynamic> json  = jsonDecode(response.body);
+     final Map<String, dynamic> json  = response.data;
      final bool success = json['success'];
      if(success){
        final List list = json['data'];
@@ -165,10 +168,11 @@ class GatewayRepository implements IGatewayRepository{
 
     final authCredential = await GatewayCredentials().getAccessToken(baseUrl: baseUrl, clientId: clientId, clientSecret: clientSecret);
 
-    final url = Uri.parse("$baseUrl/v3/gateway/merchants/make_payment");
+    final String url = "$baseUrl/v3/gateway/merchants/make_payment";
 
-    final response = await post(url,
-    body: jsonEncode({
+    final dio = Dio();
+    final response = await dio.post(url,
+    data: {
       "amount":amount,
       "designation":designation,
       "gateway_operator_code":gatewayOperatorCode,
@@ -181,18 +185,20 @@ class GatewayRepository implements IGatewayRepository{
       "webhook_url":webhookUrl,
       "return_url":returnUrl,
       "cancel_url":cancelUrl
-    }),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ${authCredential.accessToken}'
-      }
+    },
+      options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ${authCredential.accessToken}'
+          }
+      )
     );
 
-    print("makePayment() ==>>> BODY ${response.body}");
+    //print("makePayment() ==>>> BODY ${response.data.toString()}");
 
     if(response.statusCode == 200){
-      final Map<String, dynamic> json  = jsonDecode(response.body);
+      final Map<String, dynamic> json  = response.data;
       final bool success = json['success'];
       if(success){
         final Map<String, dynamic> data = json['data'];
@@ -209,7 +215,7 @@ class GatewayRepository implements IGatewayRepository{
     }else{
 
       if(response.headers['content-type'] == 'application/json'){
-        final Map<String, dynamic> json  = jsonDecode(response.body);
+        final Map<String, dynamic> json  = response.data;
         throw GatewayException(
             message: json.containsKey('message')?json['message']:'',
             error: json.containsKey('error')?json['error']:'',
@@ -233,10 +239,12 @@ class GatewayRepository implements IGatewayRepository{
 
     final authCredential = await GatewayCredentials().getAccessToken(baseUrl: baseUrl, clientId: clientId, clientSecret: clientSecret);
 
-    final url = Uri.parse("$baseUrl/v3/gateway/merchants/make_transfer");
+    final dio = Dio();
 
-    final response = await post(url,
-        body: jsonEncode({
+    final url = "$baseUrl/v3/gateway/merchants/make_transfer";
+
+    final response = await dio.post(url,
+        data: {
           "amount":amount,
           "gateway_operator_code":gatewayOperatorCode,
           "merchant_trans_id":merchantTransId,
@@ -245,15 +253,17 @@ class GatewayRepository implements IGatewayRepository{
           "customer_firstname":customerFirstname,
           "customer_lastname":customerLastname,
           "webhook_url":webhookUrl
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${authCredential.accessToken}'
-        }
+        },
+        options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer ${authCredential.accessToken}'
+            }
+        )
     );
     if(response.statusCode == 200){
-      final Map<String, dynamic> json  = jsonDecode(response.body);
+      final Map<String, dynamic> json  = response.data;
       final bool success = json['success'];
       if(success){
         final Map<String, dynamic> data = json['data'];
@@ -270,7 +280,7 @@ class GatewayRepository implements IGatewayRepository{
     }else{
 
       if(response.headers['content-type'] == 'application/json'){
-        final Map<String, dynamic> json  = jsonDecode(response.body);
+        final Map<String, dynamic> json  = response.data;
         throw GatewayException(
             message: json.containsKey('message')?json['message']:'',
             error: json.containsKey('error')?json['error']:'',
@@ -305,10 +315,12 @@ class GatewayRepository implements IGatewayRepository{
 
     final authCredential = await GatewayCredentials().getAccessToken(baseUrl: baseUrl, clientId: clientId, clientSecret: clientSecret);
 
-    final url = Uri.parse("$baseUrl/v3/gateway/merchants/create_payment");
+    final url = "$baseUrl/v3/gateway/merchants/create_payment";
 
-    final response = await post(url,
-        body: jsonEncode({
+    final dio = Dio();
+
+    final response = await dio.post(url,
+        data: {
           "amount":amount,
           "currency_code":currencyCode,
           "merchant_trans_id":merchantTransId,
@@ -322,18 +334,20 @@ class GatewayRepository implements IGatewayRepository{
           "webhook_url":webhookUrl,
           "return_url":returnUrl,
           "cancel_url":cancelUrl
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${authCredential.accessToken}'
-        }
+        },
+        options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer ${authCredential.accessToken}'
+            }
+        )
     );
 
-    print("createPayment() ==>>> BODY ${response.body}");
+    //print("createPayment() ==>>> BODY ${response.data.toString()}");
 
     if(response.statusCode == 200){
-      final Map<String, dynamic> json  = jsonDecode(response.body);
+      final Map<String, dynamic> json  = response.data;
       final bool success = json['success'];
       if(success){
         final Map<String, dynamic> data = json['data'];
@@ -350,7 +364,7 @@ class GatewayRepository implements IGatewayRepository{
     }else{
 
       if(response.headers['content-type'] == 'application/json'){
-        final Map<String, dynamic> json  = jsonDecode(response.body);
+        final Map<String, dynamic> json  = response.data;
         throw GatewayException(
             message: json.containsKey('message')?json['message']:'',
             error: json.containsKey('error')?json['error']:'',

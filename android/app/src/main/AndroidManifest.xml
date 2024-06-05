@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.adjemin.gateway.adjemin_gateway_sdk">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
    <application
         android:label="adjemin_gateway_sdk"
         android:icon="@mipmap/ic_launcher">
