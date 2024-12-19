@@ -517,7 +517,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                   child: Text("Transaction en cours",
                     style: Theme.of(context).textTheme.headlineSmall,),
                 ),
-                const SizedBox(width: 50,),
+                const SizedBox(width: 40,),
                 GestureDetector(
                   onTap: (){
                     Navigator.of(context).pop();
