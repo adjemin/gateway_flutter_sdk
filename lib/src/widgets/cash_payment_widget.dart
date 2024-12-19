@@ -94,7 +94,9 @@ class _CashPaymentWidgetState extends State<CashPaymentWidget> {
                       fontSize: 19
                   ))
               ),
-              child:const Text("Payer",) ,
+              child:const Text("Payer", style: TextStyle(
+                color: Colors.white
+              ),) ,
             ),
           ),
 

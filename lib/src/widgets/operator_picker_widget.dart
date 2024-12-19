@@ -511,18 +511,22 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
             const SizedBox(height: 50,),
 
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(width: 20,),
+                const SizedBox(width: 30,),
                 Container(
                   child: Text("Transaction en cours",
-                    style: Theme.of(context).textTheme.headlineSmall,),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold
+                    ),),
                 ),
                 const SizedBox(width: 40,),
-                GestureDetector(
+                InkWell(
                   onTap: (){
                     Navigator.of(context).pop();
                   },
-                  child: const Icon(Icons.close,size: 40,),
+                  child: const Icon(Icons.close,size: 30,),
                 )
               ],
             ),
