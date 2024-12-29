@@ -526,7 +526,7 @@ class _OperatorPickerWidgetState extends State<OperatorPickerWidget> {
                   onTap: (){
                     Navigator.of(context).pop();
                   },
-                  child: const Icon(Icons.close,size: 30,),
+                  child: const Icon(Icons.close,size: 26,),
                 )
               ],
             ),
