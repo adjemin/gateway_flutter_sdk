@@ -94,6 +94,7 @@ class GatewayRepository implements IGatewayRepository{
 
     print('checkPaymentStatus() =>>> Uri => ${response.requestOptions.path}');
     print('checkPaymentStatus() =>>> response.statusCode => ${response.statusCode}');
+    print('checkPaymentStatus() =>>> response.body => ${response.data}');
 
     if(response.statusCode == 200){
       final Map<String, dynamic> json  = response.data;
